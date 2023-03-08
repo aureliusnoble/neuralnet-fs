@@ -1,7 +1,7 @@
 from setuptools import setup
 setup(
     name='neuralnet-fs',
-    version=0.0.1,
+    version='0.0.1',
 
     url='https://github.com/aureliusnoble/neuralnet-fs/new/main',
     author='Aurelius Noble',
