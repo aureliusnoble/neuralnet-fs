@@ -4,7 +4,7 @@ from my_pip_package import __version__
 
 setup(
     name='neuralnet-fs',
-    version=__version__,
+    version=0.0.1,
 
     url='https://github.com/aureliusnoble/neuralnet-fs/new/main',
     author='Aurelius Noble',
