@@ -1,3 +1,5 @@
+__version__ = 'dev'
+
 import numpy as np
 
 def predict_node (list_x, list_m, b):
