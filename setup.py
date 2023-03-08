@@ -11,4 +11,8 @@ setup(
     author_email='a.j.noble@lse.com',
 
     py_modules=['nnfs'],
+    
+    install_requires=[
+    'numpy',
+],
 )
