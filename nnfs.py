@@ -1,6 +1,7 @@
 __version__ = 'dev'
 
 import numpy as np
+import copy
 
 def predict_node (list_x, list_m, b):
   y_pred = 0
@@ -20,12 +21,13 @@ def predict_layer(layer):
   input_nodes = layer[0]
   weights = layer[1]
   bias = layer[2]
-  num_output_nodes = layer[3]
-  apply_transformation = layer[4]
+  apply_transformation = layer[3]
+
+  num_output_nodes = len(weights)
 
   output_layer = []
   for node in range(num_output_nodes):
-    pred_node = predict_node(input_nodes, weights[node], bias)
+    pred_node = predict_node(input_nodes, weights[node], bias[node])
     if apply_transformation:
       pred_node = sigmoid(pred_node)
     output_layer.append(pred_node)
@@ -46,14 +48,18 @@ def find_loss(y_pred, y):
   return (y_pred - y)**2
 
 def adjust_bias(layer, layer_index, y, starting_loss):
-  bias = layer[2]
-  bias_temp = layer[2] + 0.001
-  layers_temp = copy.deepcopy(layers)
-  layers_temp[layer_index][2] = bias_temp
-  new_loss = find_loss(feedforward(layers_temp), y)
-  loss_change = new_loss-starting_loss
-  bias_updated = bias - loss_change
-  return bias_updated
+  layer_bias = layer[2]
+  layer_bias_updated = []
+
+  for node_index, node_bias in enumerate(layer_bias):
+    bias_temp = node_bias + 0.001
+    layers_temp = copy.deepcopy(layers)
+    layers_temp[layer_index][2][node_index] = bias_temp
+    new_loss = find_loss(feedforward(layers_temp), y)
+    loss_change = new_loss-starting_loss
+    bias_updated = node_bias - loss_change
+    layer_bias_updated.append(bias_updated)
+  return layer_bias_updated
 
 def adjust_weights(layer, layer_index, y, starting_loss):
   layer_weights = layer[1]
@@ -85,7 +91,13 @@ def backpropagation(y, layers):
 
   return starting_loss, updated_layers
 
-
+def create_biases(num_output_nodes):
+  biases = []
+  for output_node in range(num_output_nodes):
+    biases.append(np.random.rand(1,1)[0][0])
+  
+  return biases
+  
 def create_weights(num_output_nodes, input_nodes):
   weights = []
   
@@ -119,11 +131,12 @@ def create_network(layers):
     
     weights = create_weights(num_output_nodes, input_nodes)
 
-    bias = np.random.rand(1,1)[0][0]
+    bias = create_biases(num_output_nodes)
 
-    layer = [input_nodes, weights, bias, num_output_nodes, apply_transformation]
+    layer = [input_nodes, weights, bias, apply_transformation]
     network.append(layer)
-
+    
+    
 def data_loader(inputs, network):
   network[0][0] = inputs
   return network
@@ -154,4 +167,3 @@ def predict_input(input_img, layers):
 
   prediction = feedforward(layers)
   return prediction
-
